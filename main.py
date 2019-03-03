@@ -14,8 +14,11 @@ import plot_utils
 
 # regularization terms in the cost function:
 # -----------------------------------------
-alpha = 10**(-6)
-gamma = 10**(1)
+alpha = 0*10**(-6)
+gamma = 1#10**(-3)
+
+# regularization term for Q
+Q_reg = 10**(-10)
 
 # CoM initial state: [x, xdot, x_ddot].T
 #                    [y, ydot, y_ddot].T
@@ -44,8 +47,8 @@ N                = walking_time
 # --------------------------------
 foot_step_0 = np.array([0.0, -0.09])     # initial foot step position in x-y
 Foot_steps  = reference_trajectories.manual_foot_placement(foot_step_0, no_steps)
-Z_ref  = reference_trajectories.create_CoP_trajectory(Foot_steps, walking_time,\
-                                                      no_steps_per_T)
+Z_ref  = reference_trajectories.create_CoP_trajectory(no_steps, Foot_steps, \
+                                                      walking_time, no_steps_per_T)
 #plt.plot(Z_ref[:,0], Z_ref[:,1])
 #plt.show()
 
@@ -57,6 +60,7 @@ Z_ref  = reference_trajectories.create_CoP_trajectory(Foot_steps, walking_time,\
                                                  Z_ref)
 [A, b]   = constraints.add_ZMP_constraint(walking_time, foot_length,\
                                           foot_width, P_zs, P_zu, Z_ref)
+Q        = Q_reg*np.identity(2*N) + Q   #making sure that Q is +ve definite
 
 # call the solver del sto cazzo:
 # -----------------------------
@@ -66,23 +70,22 @@ U = solve_qp(Q, -p_k, -A.T, -b)[0]
 # ------------------------------------------------------------------------------
 [X, Y, Z_x, Z_y] = motionModel.open_loop(P_ps, P_vs, P_zs, P_pu, P_vu, P_zu, \
                                          walking_time, x_hat_0, y_hat_0, U)
-
 # ------------------------------------------------------------------------------
 # visualize:
 # ------------------------------------------------------------------------------
-time               = np.arange(0, walking_time*T, T)
+time               = np.arange(0, round(walking_time*T, 2), T)
 min_admissible_CoP = Z_ref - np.tile([foot_length, foot_width], (walking_time,1))
 max_admissible_cop = Z_ref + np.tile([foot_length, foot_width], (walking_time,1))
 
 # time vs CoP and CoM in x: 'A.K.A run rabbit run !'
 # -------------------------------------------------
 plot_utils.plot_x(time, walking_time, min_admissible_CoP, max_admissible_cop, \
-                  Z_x, X)
+                  Z_x, X, Z_ref)
 
 # time VS CoP and CoM in y: 'A.K.A what goes up must go down'
 # ----------------------------------------------------------
 plot_utils.plot_y(time, walking_time, min_admissible_CoP, max_admissible_cop, \
-                  Z_y, Y)
+                  Z_y, Y, Z_ref)
 
 # plot CoP, CoM in x Vs Cop, CoM in y:
 # -----------------------------------
