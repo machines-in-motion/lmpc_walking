@@ -2,11 +2,11 @@ import numpy as np
 # Desctiption:
 # -----------
 # this function assembles the ZMP matrices A and b encapsulating
-# the foot ZMP inequality constraints in Quadratic Program:
+# the foot ZMP inequality constraints in a Quadratic Program:
 #        minimize
-#            (1/2) * u.T * Q * u + p.T * u
+#            (1/2) * u.T * Q * u - p.T * u
 #        subject to
-#            A * u <= b
+#            A.T * u >= b
 
 # Parameters:
 # ----------
@@ -26,29 +26,24 @@ import numpy as np
 # b  : (4Nx1  numpy.array)
 #      vector defining the ZMP constraints
 
-def add_ZMP_constraint(N, foot_length, foot_width, P_zs, P_zu, Z_ref):
+def add_ZMP_constraint(N, foot_length, foot_width, P_zs, P_zu, Z_ref, x_hat_k, y_hat_k):
     A = np.zeros((4*N, 2*N))
     b = np.zeros((4*N))
 
-    A[0:N  , 0:N]     = P_zu
-    A[N:2*N, N:2*N]   = P_zu
+    A[0:N  , 0:N]   = P_zu
+    A[N:2*N, 0:N]   = -P_zu
 
-    A[2*N:3*N, 0:N]   = -P_zu
+    A[2*N:3*N, N:2*N] = P_zu
     A[3*N:4*N, N:2*N] = -P_zu
 
-    x_hat_k           = np.zeros((N,3))
-    x_hat_k[0:N,0]    = Z_ref[0:N,0]
+    foot_length_N = np.zeros((N))
+    foot_width_N  = np.zeros((N))
+    foot_length_N = np.tile(foot_length,(N))
+    foot_width_N  = np.tile(foot_width,(N))
 
-    y_hat_k           = np.zeros((N,3))
-    y_hat_k[0:N,0]    = Z_ref[0:N,1]
-
-    for i in range(N): # compute ZMP constraint based on the current ZMP location
-        current_ZMP_x_constraint  = x_hat_k[i,:].T
-        current_ZMP_y_constraint  = y_hat_k[i,:].T
-
-        b[i]     = foot_length + np.dot(P_zs[i,:], current_ZMP_x_constraint)
-        b[i+N]   = foot_width  + np.dot(P_zs[i,:], current_ZMP_y_constraint)
-        b[i+2*N] = foot_length - np.dot(P_zs[i,:], current_ZMP_x_constraint)
-        b[i+3*N] = foot_width  - np.dot(P_zs[i,:], current_ZMP_y_constraint)
+    b[0:N]     = -np.dot(P_zs, x_hat_k) + Z_ref[0:N,0] - (0.5*foot_length_N)
+    b[N:2*N]   = np.dot(P_zs, x_hat_k)  - Z_ref[0:N,0] - (0.5*foot_length_N)
+    b[2*N:3*N] = -np.dot(P_zs, y_hat_k) + Z_ref[0:N,1] - (0.5*foot_width_N)
+    b[3*N:4*N] =  np.dot(P_zs, y_hat_k) - Z_ref[0:N,1] - (0.5*foot_width_N)
 
     return A,b

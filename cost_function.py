@@ -6,9 +6,9 @@ import numpy as np
 # and the linear objective term p.T inside the cost function
 # of the Quadratic Program defined as:
 #        minimize
-#            (1/2) * u.T * Q * u + p.T * u
+#            (1/2) * u.T * Q * u - p.T * u
 #        subject to
-#            D * u <= b
+#            A.T * u >= b
 
 # Parameters:
 # ----------

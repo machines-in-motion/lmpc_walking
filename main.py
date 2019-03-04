@@ -15,7 +15,7 @@ import plot_utils
 # regularization terms in the cost function:
 # -----------------------------------------
 alpha = 0*10**(-6)
-gamma = 1#10**(-3)
+gamma = 10**(-3)
 
 # regularization term for Q
 Q_reg = 10**(-10)
@@ -58,13 +58,13 @@ Z_ref  = reference_trajectories.create_CoP_trajectory(no_steps, Foot_steps, \
 [Q, p_k] = cost_function.compute_objective_terms(alpha, gamma, walking_time, \
                                                  P_zs, P_zu, x_hat_0, y_hat_0,\
                                                  Z_ref)
-[A, b]   = constraints.add_ZMP_constraint(walking_time, foot_length,\
-                                          foot_width, P_zs, P_zu, Z_ref)
+[A, b]   = constraints.add_ZMP_constraint(walking_time, foot_length, foot_width,\
+                                          P_zs, P_zu, Z_ref, x_hat_0, y_hat_0)
 Q        = Q_reg*np.identity(2*N) + Q   #making sure that Q is +ve definite
 
 # call the solver del sto cazzo:
 # -----------------------------
-U = solve_qp(Q, -p_k, -A.T, -b)[0]
+U = solve_qp(Q, -p_k, A.T, b)[0]
 
 # open-loop planning: (based on the initial state x_hat_0, y_hat_0)
 # ------------------------------------------------------------------------------
@@ -74,8 +74,8 @@ U = solve_qp(Q, -p_k, -A.T, -b)[0]
 # visualize:
 # ------------------------------------------------------------------------------
 time               = np.arange(0, round(walking_time*T, 2), T)
-min_admissible_CoP = Z_ref - np.tile([foot_length, foot_width], (walking_time,1))
-max_admissible_cop = Z_ref + np.tile([foot_length, foot_width], (walking_time,1))
+min_admissible_CoP = Z_ref - np.tile([foot_length/2, foot_width/2], (walking_time,1))
+max_admissible_cop = Z_ref + np.tile([foot_length/2, foot_width/2], (walking_time,1))
 
 # time vs CoP and CoM in x: 'A.K.A run rabbit run !'
 # -------------------------------------------------
