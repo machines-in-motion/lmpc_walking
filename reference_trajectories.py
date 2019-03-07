@@ -44,7 +44,7 @@ def create_CoP_trajectory(no_steps, Foot_steps, walking_time, no_steps_per_T):
     if Foot_steps.shape[0] == 1:
         Z_ref[j:j+no_steps_per_T, :] = Foot_steps[0,:]
     else:
-        print 'fuck'
+        #print 'fuck'
         for i in range (Foot_steps.shape[0]):
              Z_ref[j:j+no_steps_per_T, :] = Foot_steps[i,:]
              j = j + no_steps_per_T
