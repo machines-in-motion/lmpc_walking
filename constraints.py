@@ -26,7 +26,7 @@ import numpy as np
 # b  : (4Nx1  numpy.array)
 #      vector defining the ZMP constraints
 
-def add_ZMP_constraint(N, foot_length, foot_width, P_zs, P_zu, Z_ref, x_hat_k, y_hat_k):
+def add_ZMP_constraints(N, foot_length, foot_width, P_zs, P_zu, Z_ref_k, x_hat_k, y_hat_k):
     A = np.zeros((4*N, 2*N))
     b = np.zeros((4*N))
 
@@ -41,9 +41,9 @@ def add_ZMP_constraint(N, foot_length, foot_width, P_zs, P_zu, Z_ref, x_hat_k, y
     foot_length_N = np.tile(foot_length,(N))
     foot_width_N  = np.tile(foot_width,(N))
 
-    b[0:N]     = -np.dot(P_zs, x_hat_k) + Z_ref[0:N,0] - (0.5*foot_length_N)
-    b[N:2*N]   = np.dot(P_zs, x_hat_k)  - Z_ref[0:N,0] - (0.5*foot_length_N)
-    b[2*N:3*N] = -np.dot(P_zs, y_hat_k) + Z_ref[0:N,1] - (0.5*foot_width_N)
-    b[3*N:4*N] =  np.dot(P_zs, y_hat_k) - Z_ref[0:N,1] - (0.5*foot_width_N)
+    b[0:N]     = -np.dot(P_zs, x_hat_k) + Z_ref_k[0:N,0] - (0.5*foot_length_N)
+    b[N:2*N]   = np.dot(P_zs, x_hat_k)  - Z_ref_k[0:N,0] - (0.5*foot_length_N)
+    b[2*N:3*N] = -np.dot(P_zs, y_hat_k) + Z_ref_k[0:N,1] - (0.5*foot_width_N)
+    b[3*N:4*N] =  np.dot(P_zs, y_hat_k) - Z_ref_k[0:N,1] - (0.5*foot_width_N)
 
     return A,b

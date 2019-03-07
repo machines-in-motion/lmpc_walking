@@ -26,7 +26,7 @@ import numpy as np
 # Q     : (2Nx2N numpy.array)
 # p_k   : (2Nx1  numpy.array)
 
-def compute_objective_terms(alpha, gamma, N,  P_zs, P_zu, x_hat, y_hat, Z_ref):
+def compute_objective_terms(alpha, gamma, N,  P_zs, P_zu, x_hat_k, y_hat_k, Z_ref_k):
     Q_prime         = np.zeros((N,N))
     Q_prime         = alpha*np.identity(N) + (gamma * np.dot(P_zu.T, P_zu))
     Q               = np.zeros((2*N, 2*N))
@@ -34,6 +34,7 @@ def compute_objective_terms(alpha, gamma, N,  P_zs, P_zu, x_hat, y_hat, Z_ref):
     Q[N:2*N, N:2*N] = Q_prime
 
     p_k             = np.zeros((2*N))
-    p_k[0:N]        = np.dot((gamma*P_zu.T), (np.dot(P_zs, x_hat) - Z_ref[:,0]))
-    p_k[N:2*N]      = np.dot((gamma*P_zu.T), (np.dot(P_zs, y_hat) - Z_ref[:,1]))
+    p_k[0:N]        = np.dot((gamma*P_zu.T), (np.dot(P_zs, x_hat_k) - Z_ref_k[:,0]))
+    p_k[N:2*N]      = np.dot((gamma*P_zu.T), (np.dot(P_zs, y_hat_k) - Z_ref_k[:,1]))
+
     return Q, p_k
