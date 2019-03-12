@@ -35,21 +35,25 @@ foot_width  = 0.1
 
 # MPC Parameters:
 # --------------
-T                     = 0.1                        # sampling time interval
-step_time             = 0.8                        # time needed for every step
+T                     = 0.1                                # sampling time interval
+step_time             = 0.8                                # time needed for every step
 no_steps_per_T        = int(round(step_time/T))
-no_desired_steps      = 3                                 # number of desired walking steps
-no_planned_steps      = 2+no_desired_steps                 # making sure to plan 2 steps ahead
-desired_walking_time  = no_desired_steps * no_steps_per_T  # desired walking duration
-planned_walking_time  = no_planned_steps * no_steps_per_T  #
 N                     = 16                                 # preceding horizon
+
+# walking parameters:
+# ------------------
+Step_length           = 0.21                               # fixed step length in the xz-plane
+no_desired_steps      = 4                                  # number of desired walking steps
+no_planned_steps      = 2+no_desired_steps                 # planning 2 steps ahead
+desired_walking_time  = no_desired_steps * no_steps_per_T  # number of desired walking intervals
+planned_walking_time  = no_planned_steps * no_steps_per_T  # number of planned walking intervals
 
 # compute CoP reference trajectory:
 # --------------------------------
 foot_step_0   = np.array([0.0, -0.09])    # initial foot step position in x-y
 
-desiredFoot_steps    = reference_trajectories.manual_foot_placement(foot_step_0, no_desired_steps)
-plannedFoot_steps    = reference_trajectories.manual_foot_placement(foot_step_0, no_planned_steps)
+desiredFoot_steps    = reference_trajectories.manual_foot_placement(foot_step_0, Step_length, no_desired_steps)
+plannedFoot_steps    = reference_trajectories.manual_foot_placement(foot_step_0, Step_length, no_planned_steps)
 
 desired_Z_ref = reference_trajectories.create_CoP_trajectory(no_desired_steps, desiredFoot_steps, \
                                                     desired_walking_time, no_steps_per_T)

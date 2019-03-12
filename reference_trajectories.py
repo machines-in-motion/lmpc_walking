@@ -14,8 +14,7 @@ import numpy as np
 # -------
 #  Foot_steps = [Foot_steps_x, Foot_steps_y].T (no_stepsx2 numpy.array)
 
-def manual_foot_placement(foot_step_0, no_steps):
-    fixed_step_x = 0.3
+def manual_foot_placement(foot_step_0, fixed_step_x, no_steps):
     Foot_steps   = np.zeros((no_steps, 2))
     if no_steps == 1:
         Foot_steps[0,0] = foot_step_0[0]
