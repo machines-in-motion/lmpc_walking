@@ -29,13 +29,11 @@ def manual_foot_placement(foot_step_0, fixed_step_x, no_steps):
                 Foot_steps[i,:] = foot_step_0
             elif i == 1:
                 Foot_steps[i,:] = -foot_step_0
-            elif i % 2 != 0:
-                Foot_steps[i,0] = Foot_steps[i-2,0] + fixed_step_x
-                Foot_steps[i,1] = Foot_steps[i-2,1]
             else:
                 Foot_steps[i,0] = Foot_steps[i-2,0] + fixed_step_x
-                Foot_steps[i,1] = Foot_steps[i-2,1]
+                Foot_steps[i,1] = Foot_steps[i-2,1] 
     return Foot_steps
+
 
 def create_CoP_trajectory(no_steps, Foot_steps, walking_time, no_steps_per_T):
     Z_ref  = np.zeros((walking_time,2))
@@ -43,7 +41,6 @@ def create_CoP_trajectory(no_steps, Foot_steps, walking_time, no_steps_per_T):
     if Foot_steps.shape[0] == 1:
         Z_ref[j:j+no_steps_per_T, :] = Foot_steps[0,:]
     else:
-        #print 'fuck'
         for i in range (Foot_steps.shape[0]):
              Z_ref[j:j+no_steps_per_T, :] = Foot_steps[i,:]
              j = j + no_steps_per_T

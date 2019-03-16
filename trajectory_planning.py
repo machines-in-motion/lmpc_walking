@@ -42,13 +42,13 @@ no_steps_per_T   = int(round(step_time/T))
 # walking parameters:
 # ------------------
 Step_length      = 0.21                       # fixed step length in the xz-plane
-no_steps         = 3                          # number of desired walking steps
+no_steps         = 20                          # number of desired walking steps
 walking_time     = no_steps * no_steps_per_T  # number of desired walking intervals
 
 # compute CoP reference trajectory:
 # --------------------------------
 foot_step_0 = np.array([0.0, -0.09])     # initial foot step position in x-y
-Foot_steps  = reference_trajectories.manual_foot_placement(foot_step_0, Step_length no_steps)
+Foot_steps  = reference_trajectories.manual_foot_placement(foot_step_0, Step_length, no_steps)
 Z_ref  = reference_trajectories.create_CoP_trajectory(no_steps, Foot_steps, \
                                                       walking_time, no_steps_per_T)
 #print Z_ref
