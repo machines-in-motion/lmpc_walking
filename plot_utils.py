@@ -21,6 +21,9 @@ def plot_x(time, walking_time, min_admissible_CoP, max_admissible_cop, Z_x, X, Z
     plt.legend()
     #plt.title("time from"  ,str(time[0]), str(time[15]))
 
+# time vs CoM_dot in x: 'A.K.A run rabbit run !'
+# -------------------------------------------------
+
 # time VS CoP and CoM in y: 'A.K.A what goes up must go down'
 # ----------------------------------------------------------
 def plot_y(time, walking_time, min_admissible_CoP, max_admissible_cop, Z_y, Y, Z_ref):
@@ -53,7 +56,7 @@ def plot_xy(time, walking_time, foot_length, foot_width, Z_ref, Z_x, Z_y, X, Y):
                                           edgecolor = 'b',           \
                                           facecolor = 'none')
         currentAxis.add_patch(current_foot)
-    currentAxis.set_xlim([-0.5,1.9])
+    currentAxis.set_xlim([-0.5,5.0])
     currentAxis.set_ylim([-0.5,0.8])
     plt.xlabel(r'\textbf{x} (m)')
     plt.ylabel(r'\textbf{y} (m)')
@@ -74,8 +77,8 @@ def plot_horizons(desired_walking_time, N, desired_Z_ref, horizon_data, foot_len
         min_admissible_CoP = Z_ref_k - np.tile([foot_length/2, foot_width/2], (N,1))
         max_admissible_cop = Z_ref_k + np.tile([foot_length/2, foot_width/2], (N,1))
 
-        plot_x(time_k, N, min_admissible_CoP, max_admissible_cop, \
-                          Z_x_k, X_k, Z_ref_k)
+        #plot_x(time_k, N, min_admissible_CoP, max_admissible_cop, \
+        #                  Z_x_k, X_k, Z_ref_k)
         plot_y(time_k, N, min_admissible_CoP, max_admissible_cop, \
                           Z_y_k, Y_k, Z_ref_k)
         #plot_xy(time_k, N, foot_length, foot_width, desired_Z_ref, \
