@@ -42,11 +42,6 @@ def compute_recursive_matrices(N, T, h, g):
     P_as = np.zeros((N,3))
     P_zs = np.zeros((N,3))
 
-    P_pu = np.zeros((N,N))
-    P_vu = np.zeros((N,N))
-    P_au = np.zeros((N,N))
-    P_zu = np.zeros((N,N))
-
     temp_pu = np.zeros((N))
     temp_vu = np.zeros((N))
     temp_au = np.zeros((N))
@@ -125,9 +120,46 @@ def compute_recursive_dynamics(P_ps, P_vs, P_as, P_zs, P_pu, P_vu, P_au, P_zu,\
     Y[0:N,2]  = np.dot(P_as, y_hat_k) + np.dot(P_au, U[N:2*N]) #y_ddot
 
     # evaluate computed CoP
-    Z_x = np.zeros((N))
-    Z_y = np.zeros((N))
     Z_x = np.dot(P_zs, x_hat_k) + np.dot(P_zu, U[0:N])
     Z_y = np.dot(P_zs, y_hat_k) + np.dot(P_zu, U[N:2*N])
 
     return X, Y, Z_x, Z_y
+    
+    
+if __name__=='__main__':
+    import numpy.random as random
+    print ' Test compute_recursive_matrices '.center(60,'*')
+    h           = 0.80
+    g           = 9.81
+    T           = 0.1                # sampling time interval
+    N           = 100   
+    x_0 = random.rand(3) -0.5
+    y_0 = random.rand(3) - 0.5
+    U = random.rand(2*N) - 0.5
+    
+    [P_ps, P_vs, P_as, P_zs, P_pu, P_vu, P_au, P_zu] = compute_recursive_matrices(N, T, h, g)
+    X, Y, Z_x, Z_y = compute_recursive_dynamics(P_ps, P_vs, P_as, P_zs, 
+                                                P_pu, P_vu, P_au, P_zu,
+                                                N, x_0, y_0, U)
+                
+    A = np.array([[1.0,   T, 0.5*(T**2.0)],
+                  [0.0, 1.0, T           ],
+                  [0.0, 0.0, 1.0         ]])
+    B = np.array([[(T**3)/6.0, (T**2)/2.0, T]]).T
+    C = np.array([[1.0, 0.0, -h/g]])
+    
+    X_real,      Y_real         = np.zeros((3,N)), np.zeros((3,N))
+    Z_x_real,    Z_y_real       = np.zeros((N)), np.zeros((N))
+    X_real[:,0], Y_real[:,0]    = x_0, y_0
+    for i in range(N-1):
+        X_real[:,i+1] = A.dot(X_real[:,i]) + B.dot(U[i]).squeeze()
+        Y_real[:,i+1] = A.dot(Y_real[:,i]) + B.dot(U[N+i]).squeeze()
+        Z_x_real[i+1] = C.dot(X_real[:,i+1])
+        Z_y_real[i+1] = C.dot(Y_real[:,i+1])
+
+#    print 'X:\n', X
+#    print 'X_real:\n', X_real.T
+    print 'Error on X',     np.max(np.abs(X[:-1,:]-X_real[:,1:].T))
+    print 'Error on Y',     np.max(np.abs(Y[:-1,:]-Y_real[:,1:].T))
+    print 'Error on ZMP X', np.max(np.abs(Z_x[:-1]-Z_x_real[1:].T))
+    print 'Error on ZMP Y', np.max(np.abs(Z_y[:-1]-Z_y_real[1:].T))
