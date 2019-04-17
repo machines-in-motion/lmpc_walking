@@ -23,7 +23,6 @@ import matplotlib.patches as patches
 # headers
 import reference_trajectories
 import cost_function
-import recursive_matrices
 import constraints
 import motionModel
 import plot_utils
@@ -113,7 +112,7 @@ horizon_data = {}
 for i in range(desired_walking_time):
 
     time_k   = np.arange(T_k, T_k + (N*T), T)
-    print 'T_k = ', T_k, '\n'
+    print 'T_k = ', T_k, 's\n'
     print 'loop number = ', i, '\n'
     print 'Z_ref_k = ', Z_ref_k
 

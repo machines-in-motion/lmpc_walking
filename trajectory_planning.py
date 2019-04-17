@@ -23,7 +23,6 @@ import matplotlib.patches as patches
 # headers
 import reference_trajectories
 import cost_function
-import recursive_matrices
 import constraints
 import motionModel
 import plot_utils
