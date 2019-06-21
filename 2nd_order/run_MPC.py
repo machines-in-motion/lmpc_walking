@@ -45,13 +45,13 @@ foot_width  = 0.10
 delta_t               = 0.1                                # sampling time interval
 step_time             = 0.8                                # time needed for every step
 no_steps_per_T        = int(round(step_time/delta_t))
-N                     = 16                                 # preceding horizon
+N                     = 18                                 # preceding horizon
 
 # walking parameters:
 # ------------------
 step_length           = 0.21                               # fixed step length in the xz-plane
 no_desired_steps      = 20                                 # number of desired walking steps
-no_planned_steps      = 2+no_desired_steps                 # planning 2 steps ahead
+no_planned_steps      = 2+no_desired_steps                 # planning 2 steps ahead (increase if you want to increase the horizon)
 desired_walking_time  = no_desired_steps * no_steps_per_T  # number of desired walking intervals
 planned_walking_time  = no_planned_steps * no_steps_per_T  # number of planned walking intervals
 
@@ -61,14 +61,15 @@ planned_walking_time  = no_planned_steps * no_steps_per_T  # number of planned w
 x_hat_0 = np.array([0.0, 0.0])
 y_hat_0 = np.array([-0.09, 0.0])
 
+step_width = 2*np.absolute(y_hat_0[0])
 
 # compute CoP reference trajectory:
 # --------------------------------
 foot_step_0   = np.array([0.0, -0.09])    # initial foot step position in x-y
 
-desiredFoot_steps  = reference_trajectories.manual_foot_placement(foot_step_0, \
+desiredFoot_steps  = reference_trajectories.manual_foot_placement(foot_step_0,
                                                 step_length, no_desired_steps)
-desired_Z_ref = reference_trajectories.create_CoP_trajectory(no_desired_steps, \
+desired_Z_ref = reference_trajectories.create_CoP_trajectory(no_desired_steps,
                         desiredFoot_steps, desired_walking_time, no_steps_per_T)
 
 #plannedFoot_steps = reference_trajectories.manual_foot_placement(foot_step_0,\
@@ -115,8 +116,9 @@ for i in range(desired_walking_time):
 
     horizon_data[i] = {}
     horizon_data[i]['zmp_reference'] = Z_ref_k
-    [Q, p_k] = cost_function.compute_objective_terms(alpha, beta, gamma, N,
-                            P_ps, P_pu, P_vs, P_vu, x_hat_k, y_hat_k, Z_ref_k)
+    [Q, p_k] = cost_function.compute_objective_terms(alpha, beta, gamma,
+                        step_time, no_steps_per_T, N, step_length, step_width,
+                        P_ps, P_pu, P_vs, P_vu, x_hat_k, y_hat_k, Z_ref_k)
 
     [A_zmp, b_zmp] = constraints.add_ZMP_constraints(N, foot_length, foot_width,
                                                 Z_ref_k, x_hat_k, y_hat_k)

@@ -58,6 +58,8 @@ N                     = desired_walking_time  # preceding horizon
 x_0 = np.array([0.0, 0.0])
 y_0 = np.array([-0.09, 0.0])
 
+step_width = 2*np.absolute(y_0[0])
+
 # compute CoP reference trajectory:
 # --------------------------------
 foot_step_0   = np.array([0.0, -0.09])   # initial foot step position in x-y
@@ -78,8 +80,9 @@ terminal_index = N-1
 # --------------------------------------------
 [P_ps, P_vs, P_pu, P_vu] = motion_model.compute_recursive_matrices(delta_t, g,
                                                                    h, N)
-[Q, p_k] = cost_function.compute_objective_terms(alpha, beta, gamma, N, P_ps,
-                                    P_pu,P_vs, P_vu, x_0, y_0, desired_Z_ref)
+[Q, p_k] = cost_function.compute_objective_terms(alpha, beta, gamma,
+                        step_time, no_steps_per_T, N, step_length, step_width,
+                        P_ps, P_pu, P_vs, P_vu, x_0, y_0, desired_Z_ref)
 [A_zmp, b_zmp] = constraints.add_ZMP_constraints(N, foot_length, foot_width,
                                                 desired_Z_ref, x_0, y_0)
 

@@ -54,8 +54,9 @@ from matplotlib.gridspec import GridSpec
 # Q     : Hessian  (2Nx2N numpy.array)
 # p_k   : Gradient (2N,  numpy.array)
 
-def compute_objective_terms(alpha, beta, gamma, N, P_ps, P_pu, P_vs, P_vu,
-                            x_hat_k, y_hat_k, Z_ref_k):
+def compute_objective_terms(alpha, beta, gamma, step_duration, no_steps_per_T,
+                            N, stride_length, stride_width, P_ps, P_pu, P_vs,
+                            P_vu, x_hat_k, y_hat_k, Z_ref_k):
 
     # pre-allocate memory
     Q    = np.zeros((2*N, 2*N))
@@ -72,10 +73,10 @@ def compute_objective_terms(alpha, beta, gamma, N, P_ps, P_pu, P_vs, P_vu,
     x_dotr_N = np.zeros((N))
     y_dotr_N = np.zeros((N))
 
-    x_r_N    = np.tile(0.21/N, N)
-    y_r_N    = np.tile(0.18/N, N)
-    x_dotr_N = np.tile(0.21/0.8, N)
-    y_dotr_N = np.tile(0.18/0.8, N)
+    x_r_N    = np.tile(stride_length/no_steps_per_T, N)
+    y_r_N    = np.tile(stride_width/no_steps_per_T, N)
+    x_dotr_N = np.tile(stride_length/step_duration, N)
+    y_dotr_N = np.tile(stride_width/step_duration, N)
 
     p_k[0:N] = gamma * (np.dot(P_vu.T, (np.dot(P_vs, x_hat_k)))- np.dot(P_vu.T, x_dotr_N)) \
                + beta  * (np.dot(P_pu.T, (np.dot(P_ps, x_hat_k)))- np.dot(P_pu.T, x_r_N)) \
